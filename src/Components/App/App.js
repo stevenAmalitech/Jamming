@@ -69,14 +69,33 @@ export default class App extends Component {
     this.setState({ playlistName: name });
   }
 
-  savePlaylist() {
-    let tracksUri = this.state.playlistTracks.map((track) => track.uri);
-    Spotify.savePlaylist(this.state.playlistName, tracksUri);
+  async savePlaylist() {
+    try {
+      let tracksUri = this.state.playlistTracks.map((track) => track.uri);
+
+      await Spotify.savePlaylist(this.state.playlistName, tracksUri);
+
+      this.setState({
+        playlistName: "New Playlist",
+        playlistTracks: [],
+      });
+
+      alert("Playlist saved to your account");
+    } catch (error) {
+      console.error(error);
+      alert("Error occured. Please refresh page and try again.");
+    }
   }
 
   async search(term) {
-    Spotify.getAccessToken();
-    let searchResults = await Spotify.search(term);
-    this.setState({ searchResults: searchResults });
+    try {
+      Spotify.getAccessToken();
+
+      let searchResults = await Spotify.search(term);
+
+      this.setState({ searchResults: searchResults });
+    } catch (error) {
+      console.error(error);
+    }
   }
 }
